@@ -4,6 +4,7 @@
     <head>
         <style>
             #main{
+             
                 display:flex
             }
         </style>
@@ -15,7 +16,9 @@
         var list_of_pieces = []
         var list_pieces_choose = []
         var list_of_randomized_pieces = []
-        
+        var image = null
+        var puzzle_box = null
+        var wheel = null
         window.onload = function(){
             make_puzzle_box(750, 750, 0, 0) // width, height, left, top
             make_wheel(200, 750, 0, 0)
@@ -40,17 +43,24 @@
         }
         function divide_wheel(rows, cols, width, height){
             var table = document.createElement('table')
+            table.id = 'wheel_table'
             table.style.borderCollapse = 'collapse';
             for (var i = 0; i < rows; i++){
                 var tr = document.createElement('tr')
                 var row_list = []
                 for (var j = 0; j < cols; j++){
                     var td = document.createElement('td');
-                    td.style.border = '1px solid black';
-                    td.style.width = '' + width + 'px';
-                    td.style.height = '' + height + 'px';
-                    td.id = '' + ((i * cols) + (j+1)) + '' 
-                    td.textContent = list_of_randomized_pieces[(i * cols) + (j)].id
+                    td = list_of_randomized_pieces[(i * cols) + (j)]
+                    td.textContent = null
+                    // td.style.border = '0.5px solid black';
+                    // td.style.width = '' + width + 'px';
+                    // td.style.height = '' + height + 'px';
+                    // td.id = '' + ((i * cols) + (j+1)) + '' 
+                    // td.backgroundImage = `url(${image.src})`;
+                    // td.style.backgroundPosition = list_of_randomized_pieces[(i * cols) + (j)].backgroundPosition
+                    // td.style.backgroundSize = list_of_randomized_pieces[(i * cols) + (j)].backgroundSize
+                    td.style.opacity = 1
+                    // td.textContent = list_of_randomized_pieces[(i * cols) + (j)].id
                     tr.appendChild(td);
                     
                     row_list.push(td)
@@ -77,7 +87,7 @@
             }
 
             for (k = 0; k < list_of_nums.length; k++){
-                list_of_randomized_pieces.push(list_of_pieces[list_of_nums[k][0]][list_of_nums[k][1]]);
+                list_of_randomized_pieces.push(list_of_pieces[list_of_nums[k][0]][list_of_nums[k][1]].cloneNode(true));
             }
             console.log(list_of_randomized_pieces)
             console.log(list_of_nums)
@@ -89,6 +99,8 @@
             return [one_piece_width, one_piece_height]
         }
         function divide_puzzle_box(rows, cols, width, height){
+            console.log(image)
+            console.log(image)
             var table = document.createElement('table')
             table.style.borderCollapse = 'collapse';
             for (var i = 0; i < rows; i++){
@@ -100,7 +112,15 @@
                     td.style.width = '' + width + 'px';
                     td.style.height = '' + height + 'px';
                     td.id = '' + ((i * cols) + (j+1)) + '' 
-                    td.textContent = '' + ((i * cols) + (j+1)) + '' 
+                    td.style.backgroundImage = `url(${image.src})`;
+                    td.style.backgroundRepeat = 'no-repeat'
+                    td.style.opacity = 0
+                    // set text
+                    td.style.backgroundPosition = `-${j * width}px -${i * height}px`;  
+                    td.style.backgroundSize = `${cols * width}px ${rows * height}px`;
+                    console.log(td.style.backgroundPosition)
+                    
+                    td.textContent = '' + ((i * cols) + (j+1)) + ''
                     tr.appendChild(td);
                     
                     row_list.push(td)
@@ -108,7 +128,7 @@
                 table.appendChild(tr);
                 
                 list_of_pieces.push(row_list)
-            }
+            }            
             document.getElementById('puzzle_box').appendChild(table);
             console.log(list_of_pieces)
         }
@@ -127,15 +147,15 @@
         function getNumValue(){
             var value = parseInt(document.getElementById('puzzle_num').value);
             console.log(value)
-            console.log(parseInt(list_pieces_choose[2][0].textContent))
-            if (parseInt(list_pieces_choose[2][0].textContent) == value){
+            console.log(parseInt(list_pieces_choose[2].textContent))
+            if (parseInt(list_pieces_choose[2].id) == value){
                 for (var i = 0; i < list_of_pieces.length; i++){
                     var row = list_of_pieces[i]
                     for (var j = 0; j < row.length; j++){
                         if (parseInt(row[j].textContent) == value){
                             console.log('True')
                             console.log(row[j])
-                            row[j].style.backgroundColor = 'green'
+                            row[j].style.opacity = '1'
                         } 
                     }
                 }
@@ -144,18 +164,60 @@
         function moveUp(){
             first_element = list_of_randomized_pieces.shift()
             list_of_randomized_pieces.push(first_element)
-            for (var i = 0; i < 5; i++){
-                list_pieces_choose[i][0].textContent = list_of_randomized_pieces[i].id
-            }
             
+            for (var i = 0; i < 5; i++){
+                list_pieces_choose[i] = list_of_randomized_pieces[i]
 
+            }
+            updateTable()
         }
         function moveDown(){
             last_element = list_of_randomized_pieces.pop()
             list_of_randomized_pieces.unshift(last_element)
             
             for (var i = 0; i < 5; i++){
-                list_pieces_choose[i][0].textContent = list_of_randomized_pieces[i].id
+                list_pieces_choose[i] = list_of_randomized_pieces[i]
+                
+
+            }
+            updateTable()
+
+        }
+        function updateTable(){
+            var table = document.getElementById('wheel_table');
+
+            while (table.firstChild) {
+                table.removeChild(table.firstChild);
+            }
+
+            for (let i = 0; i < list_pieces_choose.length; i++) {
+                var tr = document.createElement('tr');
+                var td = list_pieces_choose[i];
+                td.style.opacity = 1
+                td.textContent = null
+                console.log(td.textContent)
+                if (td) {
+                    tr.appendChild(td.cloneNode(true));
+                }
+                table.appendChild(tr);
+            }
+
+                
+        }
+        function previewImage() {
+            var file = document.getElementById('imageInput').files[0];
+            if (file){
+                var reader = new FileReader() 
+            }
+            reader.onload = function(e) {
+                image = document.getElementById('imagePreview')
+                image.src = e.target.result;
+                image.style.width = '750px'
+                image.style.height = '750px'                
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
             }
 
         }
@@ -164,8 +226,11 @@
     </script>
     <body>
         <div id = 'picture_uploader'>
-            
-
+            <form id="imageUploadForm">
+                <input type="file" id="imageInput" accept="image/*" onchange="previewImage()">
+                <br><br>
+                <img id="imagePreview" src="" alt="Image preview will appear here">
+            </form>
         </div>
         <div id = 'main'>
             <div id = 'left'>
