@@ -11,7 +11,6 @@
 
     </head>
     <script>
-        //update
 
         var list_of_pieces = []
         var list_pieces_choose = []
@@ -40,57 +39,6 @@
             wheel.style.float = 'right'
             
             
-        }
-        function divide_wheel(rows, cols, width, height){
-            var table = document.createElement('table')
-            table.id = 'wheel_table'
-            table.style.borderCollapse = 'collapse';
-            for (var i = 0; i < rows; i++){
-                var tr = document.createElement('tr')
-                var row_list = []
-                for (var j = 0; j < cols; j++){
-                    var td = document.createElement('td');
-                    td = list_of_randomized_pieces[(i * cols) + (j)]
-                    td.textContent = null
-                    // td.style.border = '0.5px solid black';
-                    // td.style.width = '' + width + 'px';
-                    // td.style.height = '' + height + 'px';
-                    // td.id = '' + ((i * cols) + (j+1)) + '' 
-                    // td.backgroundImage = `url(${image.src})`;
-                    // td.style.backgroundPosition = list_of_randomized_pieces[(i * cols) + (j)].backgroundPosition
-                    // td.style.backgroundSize = list_of_randomized_pieces[(i * cols) + (j)].backgroundSize
-                    td.style.opacity = 1
-                    // td.textContent = list_of_randomized_pieces[(i * cols) + (j)].id
-                    tr.appendChild(td);
-                    
-                    row_list.push(td)
-                }
-                table.appendChild(tr);
-                list_pieces_choose.push(row_list)            
-                
-                
-            }
-            document.getElementById('wheel').appendChild(table);
-            console.log(list_pieces_choose)
-        }
-        function randomizelist(rows, cols){
-            var list_of_nums = []
-            for (var j = 0; j < rows; j++){
-                for (var k = 0; k < cols; k++){
-                    list_of_nums.push([j, k])
-                }
-            }
-            for (var i = list_of_nums.length - 1 ; i > 0; i--){
-                var randomIndex = Math.floor(Math.random() * (i+1));
-                [list_of_nums[i], list_of_nums[randomIndex]] = [list_of_nums[randomIndex], list_of_nums[i]];
-
-            }
-
-            for (k = 0; k < list_of_nums.length; k++){
-                list_of_randomized_pieces.push(list_of_pieces[list_of_nums[k][0]][list_of_nums[k][1]].cloneNode(true));
-            }
-            console.log(list_of_randomized_pieces)
-            console.log(list_of_nums)
         }
         function find_width_height_one_piece(rows, cols){
             var one_piece_width = parseInt(puzzle_box.style.width) / cols;
@@ -132,6 +80,57 @@
             document.getElementById('puzzle_box').appendChild(table);
             console.log(list_of_pieces)
         }
+        function divide_wheel(rows, cols, width, height){
+            var table = document.createElement('table')
+            table.id = 'wheel_table'
+            table.style.borderCollapse = 'collapse';
+            for (var i = 0; i < rows; i++){
+                var tr = document.createElement('tr')
+                var row_list = []
+                for (var j = 0; j < cols; j++){
+                    var td = document.createElement('td');
+                    td = list_of_randomized_pieces[(i * cols) + (j)]
+                    td.textContent = null
+                    // td.style.border = '0.5px solid black';
+                    // td.style.width = '' + width + 'px';
+                    // td.style.height = '' + height + 'px';
+                    // td.id = '' + ((i * cols) + (j+1)) + '' 
+                    // td.backgroundImage = `url(${image.src})`;
+                    // td.style.backgroundPosition = list_of_randomized_pieces[(i * cols) + (j)].backgroundPosition
+                    // td.style.backgroundSize = list_of_randomized_pieces[(i * cols) + (j)].backgroundSize
+                    td.style.opacity = 1
+                    //td.textContent = list_of_randomized_pieces[(i * cols) + (j)].id
+                    tr.appendChild(td);
+                    
+                    row_list.push(td)
+                }
+                table.appendChild(tr);
+                list_pieces_choose.push(row_list)            
+            }
+            document.getElementById('wheel').appendChild(table);
+            console.log(list_pieces_choose)
+        }
+
+        function randomizelist(rows, cols){
+            var list_of_nums = []
+            for (var j = 0; j < rows; j++){
+                for (var k = 0; k < cols; k++){
+                    list_of_nums.push([j, k])
+                }
+            }
+            for (var i = list_of_nums.length - 1 ; i > 0; i--){
+                var randomIndex = Math.floor(Math.random() * (i+1));
+                [list_of_nums[i], list_of_nums[randomIndex]] = [list_of_nums[randomIndex], list_of_nums[i]];
+
+            }
+
+            for (k = 0; k < list_of_nums.length; k++){
+                list_of_randomized_pieces.push(list_of_pieces[list_of_nums[k][0]][list_of_nums[k][1]].cloneNode(true));
+            }
+            console.log(list_of_randomized_pieces)
+            console.log(list_of_nums)
+        }
+
         function getInputValue(){
             var input_rows_value = parseInt(document.getElementById('num_rows').value);
             var input_cols_value = parseInt(document.getElementById('num_cols').value);
@@ -147,15 +146,22 @@
         function getNumValue(){
             var value = parseInt(document.getElementById('puzzle_num').value);
             console.log(value)
-            console.log(parseInt(list_pieces_choose[2].textContent))
-            if (parseInt(list_pieces_choose[2].id) == value){
+            console.log(parseInt(list_pieces_choose[0][0].id))
+            if (parseInt(list_pieces_choose[0][0].id) == value){
                 for (var i = 0; i < list_of_pieces.length; i++){
                     var row = list_of_pieces[i]
                     for (var j = 0; j < row.length; j++){
-                        if (parseInt(row[j].textContent) == value){
+                        console.log(row[j].id)
+                        if (parseInt(row[j].id) == value){
                             console.log('True')
                             console.log(row[j])
                             row[j].style.opacity = '1'
+                            var table = document.getElementById('wheel_table')
+                            list_pieces_choose[0][0].remove()
+                            list_of_randomized_pieces.splice(0, 1)
+                            updateTable()
+
+                            
                         } 
                     }
                 }
@@ -165,25 +171,21 @@
             first_element = list_of_randomized_pieces.shift()
             list_of_randomized_pieces.push(first_element)
             
-            for (var i = 0; i < 5; i++){
-                list_pieces_choose[i] = list_of_randomized_pieces[i]
-
-            }
             updateTable()
         }
         function moveDown(){
             last_element = list_of_randomized_pieces.pop()
             list_of_randomized_pieces.unshift(last_element)
             
-            for (var i = 0; i < 5; i++){
-                list_pieces_choose[i] = list_of_randomized_pieces[i]
-                
-
-            }
+            
             updateTable()
 
         }
         function updateTable(){
+            for (var j = 0; j < 5; j++){
+                list_pieces_choose[j][0] = list_of_randomized_pieces[j]
+            }
+            console.log(list_pieces_choose)
             var table = document.getElementById('wheel_table');
 
             while (table.firstChild) {
@@ -192,7 +194,7 @@
 
             for (let i = 0; i < list_pieces_choose.length; i++) {
                 var tr = document.createElement('tr');
-                var td = list_pieces_choose[i];
+                var td = list_pieces_choose[i][0];
                 td.style.opacity = 1
                 td.textContent = null
                 console.log(td.textContent)
